@@ -101,18 +101,18 @@ tree_visualize <- function(tree) {
       output$tree <- shinyTree::renderTree({
         tree
       })
-      observeEvent(input$expand, {
+      shiny::observeEvent(input$expand, {
         session$sendCustomMessage("treeAction", "expand")
       })
 
-      observeEvent(input$collapse, {
+      shiny::observeEvent(input$collapse, {
         session$sendCustomMessage("treeAction", "collapse")
       })
     }
   )
 }
 
-tree_visualize(tree)
+#tree_visualize(tree)
 
 
 
@@ -122,21 +122,8 @@ tree_visualize(tree)
 
 
 
-
-
-
-
-
-
-
-
-
-
-library(shiny)
-library(shinyTree)
-
-ui <- fluidPage(
-  tags$head(
+ui <- shiny::fluidPage(
+  shiny::tags$head(
     shiny::tags$script(shiny::HTML(
       "Shiny.addCustomMessageHandler('treeAction', function(message) {
           var tree = $('#tree').jstree(true);
@@ -145,7 +132,7 @@ ui <- fluidPage(
           if (message === 'collapse') tree.close_all();
         });"
     )),
-    tags$style(HTML("
+    shiny::tags$style(shiny::HTML("
       #sidebar {
         width: 300px;
         float: left;
@@ -159,27 +146,27 @@ ui <- fluidPage(
     "))
   ),
 
-  div(
+  shiny::div(
     id = "sidebar",
     shiny::actionButton(inputId = "expand", label = "expand"),
     shiny::actionButton(inputId = "collapse", label = "collapse"),
-    h4("Directory"),
+    shiny::h4("Directory"),
     shinyTree::shinyTree("tree")
   ),
 
-  div(
+  shiny::div(
     id = "main",
-    h3(textOutput("title")),
-    uiOutput("content")
+    shiny::h3(shiny::textOutput("title")),
+    shiny::uiOutput("content")
   )
 )
 
 server <- function(input, output, session) {
-  observeEvent(input$expand, {
+  shiny::observeEvent(input$expand, {
     session$sendCustomMessage("treeAction", "expand")
   })
 
-  observeEvent(input$collapse, {
+  shiny::observeEvent(input$collapse, {
     session$sendCustomMessage("treeAction", "collapse")
   })
 
@@ -188,7 +175,7 @@ server <- function(input, output, session) {
   })
 
   # React to tree selection
-  observeEvent(
+  shiny::observeEvent(
     eventExpr = input$tree, {
     sel <- shinyTree::get_selected(input$tree, format = "names")
 
@@ -196,17 +183,17 @@ server <- function(input, output, session) {
 
     path <- paste(sel, collapse = " / ")
 
-    output$title <- renderText(path)
+    output$title <- shiny::renderText(path)
 
-    output$content <- renderUI({
-      tagList(
-        p("You selected:"),
-        tags$pre(path),
-        p("This is where your page content would go.")
+    output$content <- shiny::renderUI({
+      shiny::tagList(
+        shiny::p("You selected:"),
+        shiny::tags$pre(path),
+        shiny::p("This is where your page content would go.")
       )
     })
   })
 }
 
-shinyApp(ui, server)
+shiny::shinyApp(ui, server)
 
